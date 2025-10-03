@@ -1,0 +1,146 @@
+import { useState } from "react";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Play, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const Orchestration = () => {
+  const { toast } = useToast();
+  const [apiEndpoint, setApiEndpoint] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [response, setResponse] = useState("");
+
+  const handleExecute = () => {
+    if (!apiEndpoint) {
+      toast({
+        title: "Error",
+        description: "Please enter an API endpoint",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResponse(JSON.stringify({
+      status: "success",
+      message: "API call executed successfully",
+      timestamp: new Date().toISOString(),
+      data: {
+        tool: "Test Data Management Tool",
+        operation: "data_sync",
+        records_processed: 1250
+      }
+    }, null, 2));
+
+    toast({
+      title: "Success",
+      description: "API call executed successfully",
+    });
+  };
+
+  return (
+    <DashboardLayout>
+      <div className="p-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Orchestration</h1>
+          <p className="text-muted-foreground">Integrate with test data management APIs</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="p-6 border-0 bg-card/50 backdrop-blur-sm">
+            <h2 className="text-xl font-semibold mb-4">API Configuration</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="endpoint">API Endpoint</Label>
+                <Input
+                  id="endpoint"
+                  placeholder="https://api.example.com/v1/data"
+                  value={apiEndpoint}
+                  onChange={(e) => setApiEndpoint(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="apiKey">API Key</Label>
+                <Input
+                  id="apiKey"
+                  type="password"
+                  placeholder="Enter your API key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+              </div>
+
+              <Tabs defaultValue="get" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="get">GET</TabsTrigger>
+                  <TabsTrigger value="post">POST</TabsTrigger>
+                  <TabsTrigger value="put">PUT</TabsTrigger>
+                  <TabsTrigger value="delete">DELETE</TabsTrigger>
+                </TabsList>
+                <TabsContent value="get" className="mt-4">
+                  <p className="text-sm text-muted-foreground">Fetch data from the API</p>
+                </TabsContent>
+                <TabsContent value="post" className="mt-4">
+                  <p className="text-sm text-muted-foreground">Send data to the API</p>
+                </TabsContent>
+                <TabsContent value="put" className="mt-4">
+                  <p className="text-sm text-muted-foreground">Update existing data</p>
+                </TabsContent>
+                <TabsContent value="delete" className="mt-4">
+                  <p className="text-sm text-muted-foreground">Delete data from the API</p>
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  onClick={handleExecute}
+                  className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Execute
+                </Button>
+                <Button variant="outline">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-0 bg-card/50 backdrop-blur-sm">
+            <h2 className="text-xl font-semibold mb-4">Response</h2>
+            <div className="bg-muted rounded-lg p-4 h-[400px] overflow-auto">
+              <pre className="text-sm font-mono">
+                {response || "No response yet. Execute an API call to see the response."}
+              </pre>
+            </div>
+          </Card>
+        </div>
+
+        <Card className="p-6 border-0 bg-card/50 backdrop-blur-sm mt-6">
+          <h2 className="text-xl font-semibold mb-4">Recent API Calls</h2>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div>
+                  <p className="font-medium">GET /api/data/sync</p>
+                  <p className="text-sm text-muted-foreground">2 minutes ago</p>
+                </div>
+                <span className="px-2 py-1 rounded-full text-xs bg-accent/20 text-accent">
+                  Success
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default Orchestration;
