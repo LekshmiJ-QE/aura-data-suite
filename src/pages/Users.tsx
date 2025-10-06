@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,36 +12,128 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-}
+import { userService } from "@/services/user.service";
+import { User, UserCreate } from "@/types/user";
 
 const Users = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "User", status: "Inactive" },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [formData, setFormData] = useState<UserCreate>({
+    User_Name: "",
+    User_Emp_ID: "",
+    User_Email_ID: "",
+    User_Role: "",
+    User_Password: "",
+  });
 
-  const handleDelete = (id: number) => {
-    setUsers(users.filter(user => user.id !== id));
-    toast({
-      title: "User deleted",
-      description: "User has been successfully removed",
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    const result = await userService.getAll();
+    setIsLoading(false);
+
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
+      setUsers(result.data || []);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const result = editingUser
+      ? await userService.update(editingUser.User_ID, formData)
+      : await userService.create(formData);
+
+    setIsLoading(false);
+
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: `User ${editingUser ? "updated" : "created"} successfully`,
+      });
+      setIsDialogOpen(false);
+      resetForm();
+      fetchUsers();
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    setIsLoading(true);
+    const result = await userService.delete(id);
+    setIsLoading(false);
+
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "User deleted",
+        description: "User has been successfully removed",
+      });
+      fetchUsers();
+    }
+  };
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setFormData({
+      User_Name: user.User_Name,
+      User_Emp_ID: user.User_Emp_ID || "",
+      User_Email_ID: user.User_Email_ID || "",
+      User_Role: user.User_Role || "",
+      User_Password: "",
+    });
+    setIsDialogOpen(true);
+  };
+
+  const resetForm = () => {
+    setEditingUser(null);
+    setFormData({
+      User_Name: "",
+      User_Emp_ID: "",
+      User_Email_ID: "",
+      User_Role: "",
+      User_Password: "",
     });
   };
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.User_Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.User_Email_ID && user.User_Email_ID.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -52,10 +144,72 @@ const Users = () => {
             <h1 className="text-4xl font-bold mb-2">Users</h1>
             <p className="text-muted-foreground">Manage user accounts and permissions</p>
           </div>
-          <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
-            <Plus className="h-4 w-4 mr-2" />
-            Add User
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) resetForm();
+          }}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add User
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{editingUser ? "Edit User" : "Add New User"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name *</Label>
+                  <Input
+                    id="name"
+                    required
+                    value={formData.User_Name}
+                    onChange={(e) => setFormData({ ...formData, User_Name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="empId">Employee ID</Label>
+                  <Input
+                    id="empId"
+                    value={formData.User_Emp_ID}
+                    onChange={(e) => setFormData({ ...formData, User_Emp_ID: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.User_Email_ID}
+                    onChange={(e) => setFormData({ ...formData, User_Email_ID: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="role">Role</Label>
+                  <Input
+                    id="role"
+                    value={formData.User_Role}
+                    onChange={(e) => setFormData({ ...formData, User_Role: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password">Password *</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    required={!editingUser}
+                    value={formData.User_Password}
+                    onChange={(e) => setFormData({ ...formData, User_Password: e.target.value })}
+                  />
+                </div>
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {editingUser ? "Update User" : "Create User"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card className="p-6 border-0 bg-card/50 backdrop-blur-sm">
@@ -71,48 +225,51 @@ const Users = () => {
             </div>
           </div>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      user.status === "Active" 
-                        ? "bg-accent/20 text-accent" 
-                        : "bg-muted text-muted-foreground"
-                    }`}>
-                      {user.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="mr-2">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleDelete(user.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+          {isLoading && !users.length ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Employee ID</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.User_ID}>
+                    <TableCell className="font-medium">{user.User_Name}</TableCell>
+                    <TableCell>{user.User_Emp_ID || "-"}</TableCell>
+                    <TableCell>{user.User_Email_ID || "-"}</TableCell>
+                    <TableCell>{user.User_Role || "-"}</TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="mr-2"
+                        onClick={() => handleEdit(user)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDelete(user.User_ID)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </Card>
       </div>
     </DashboardLayout>

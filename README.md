@@ -1,8 +1,92 @@
-# Welcome to your Lovable project
+# Data360 - Data Management Platform
+
+A full-stack data governance and orchestration platform with React frontend and FastAPI backend.
+
+## Features
+
+### Governance Module
+- **Users Management**: Create, read, update, and delete user accounts
+- **Projects Management**: Organize and manage data projects
+- **Environments Management**: Configure deployment environments
+
+### Orchestration Module
+- API integration with test data management tools
+- Support for GET, POST, PUT, and DELETE requests
+- Real-time API response viewing
+
+### Find & Reserve Module
+- Data mining capabilities
+- Time-based data reservation system
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/c02c909a-afaf-4abf-bf99-3c1da08a932d
+
+## Backend Integration
+
+This project is integrated with a FastAPI backend that provides REST API endpoints for data management.
+
+### Backend Repository
+🔗 [aura-data-suite](https://github.com/LekshmiJ-QE/aura-data-suite)
+
+### API Configuration
+The frontend communicates with the backend through `src/config/api.ts`. Update the `BASE_URL` if your backend runs on a different port:
+
+```typescript
+export const API_CONFIG = {
+  BASE_URL: 'http://localhost:8000',
+  TIMEOUT: 10000,
+} as const;
+```
+
+### Available API Endpoints
+
+**Users** (`/users/`)
+- `GET /` - List all users
+- `POST /` - Create new user
+- `GET /{id}` - Get user by ID
+- `PUT /{id}` - Update user
+- `DELETE /{id}` - Delete user
+
+**Projects** (`/projects/`)
+- `GET /` - List all projects
+- `POST /` - Create new project
+- `GET /{id}` - Get project by ID
+- `PUT /{id}` - Update project
+- `DELETE /{id}` - Delete project
+
+**Environments** (`/environments/`)
+- `GET /` - List all environments
+- `POST /` - Create new environment
+- `GET /{id}` - Get environment by ID
+- `PUT /{id}` - Update environment
+- `DELETE /{id}` - Delete environment
+
+## Getting Started
+
+### Prerequisites
+- **Frontend**: Node.js 18+ and npm
+- **Backend**: Python 3.10+, PostgreSQL (or your preferred database)
+
+### Backend Setup
+
+1. Clone and navigate to the backend repository
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Configure database in `database.py`
+
+4. Run FastAPI server:
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+The API will be available at `http://localhost:8000`
+API documentation: `http://localhost:8000/docs`
+
+### Frontend Setup
 
 ## How can I edit this code?
 
@@ -50,15 +134,72 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
+## Technologies Used
 
-This project is built with:
+### Frontend
+- **React 18** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** for styling
+- **Shadcn UI** component library
+- **React Router** for navigation
+- **React Query** for data management
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Backend
+- **FastAPI** for REST API
+- **SQLAlchemy** ORM
+- **PostgreSQL** database
+- **Pydantic** for validation
+
+## Project Structure
+
+```
+.
+├── src/                      # Frontend source
+│   ├── components/          # React components
+│   │   ├── ui/             # Shadcn UI components
+│   │   ├── AppSidebar.tsx  # Navigation sidebar
+│   │   └── DashboardLayout.tsx
+│   ├── pages/              # Page components
+│   │   ├── Auth.tsx        # Login page
+│   │   ├── Dashboard.tsx   # Main dashboard
+│   │   ├── Users.tsx       # Users management
+│   │   ├── Projects.tsx    # Projects management
+│   │   ├── Environments.tsx
+│   │   ├── Orchestration.tsx
+│   │   └── FindReserve.tsx
+│   ├── services/           # API service layers
+│   │   ├── user.service.ts
+│   │   ├── project.service.ts
+│   │   └── environment.service.ts
+│   ├── types/              # TypeScript interfaces
+│   │   ├── user.ts
+│   │   ├── project.ts
+│   │   └── environment.ts
+│   ├── lib/                
+│   │   └── api-client.ts   # HTTP client
+│   └── config/             
+│       └── api.ts          # API configuration
+├── models/                  # Backend SQLAlchemy models
+├── schemas/                 # Backend Pydantic schemas
+├── routers/                 # Backend API routes
+├── crud/                    # Backend CRUD operations
+├── main.py                  # Backend entry point
+└── database.py             # Database configuration
+```
+
+## CORS Configuration
+
+The backend is configured to accept requests from any origin in development. For production, update `main.py`:
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://your-domain.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
 
 ## How can I deploy this project?
 
