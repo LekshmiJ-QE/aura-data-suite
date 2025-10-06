@@ -7,14 +7,18 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/api-client";
+import { API_CONFIG } from "@/config/api";
 
 const Orchestration = () => {
   const { toast } = useToast();
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [response, setResponse] = useState("");
+  const [httpMethod, setHttpMethod] = useState("get");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     if (!apiEndpoint) {
       toast({
         title: "Error",
@@ -24,21 +28,72 @@ const Orchestration = () => {
       return;
     }
 
-    setResponse(JSON.stringify({
-      status: "success",
-      message: "API call executed successfully",
-      timestamp: new Date().toISOString(),
-      data: {
-        tool: "Test Data Management Tool",
-        operation: "data_sync",
-        records_processed: 1250
-      }
-    }, null, 2));
+    setIsLoading(true);
+    setResponse("Loading...");
 
-    toast({
-      title: "Success",
-      description: "API call executed successfully",
-    });
+    try {
+      const headers = apiKey ? { 'Authorization': `Bearer ${apiKey}` } : undefined;
+      let result;
+
+      switch (httpMethod) {
+        case 'get':
+          result = await apiClient.get(apiEndpoint, headers);
+          break;
+        case 'post':
+          result = await apiClient.post(apiEndpoint, {}, headers);
+          break;
+        case 'put':
+          result = await apiClient.put(apiEndpoint, {}, headers);
+          break;
+        case 'delete':
+          result = await apiClient.delete(apiEndpoint, headers);
+          break;
+        default:
+          result = await apiClient.get(apiEndpoint, headers);
+      }
+
+      if (result.error) {
+        setResponse(JSON.stringify({
+          error: result.error,
+          status: result.status,
+          timestamp: new Date().toISOString()
+        }, null, 2));
+
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      } else {
+        setResponse(JSON.stringify(result.data, null, 2));
+
+        toast({
+          title: "Success",
+          description: "API call executed successfully",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setResponse(JSON.stringify({
+        error: errorMessage,
+        timestamp: new Date().toISOString()
+      }, null, 2));
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setApiEndpoint("");
+    setApiKey("");
+    setResponse("");
+    setHttpMethod("get");
   };
 
   return (
@@ -75,7 +130,7 @@ const Orchestration = () => {
                 />
               </div>
 
-              <Tabs defaultValue="get" className="w-full">
+              <Tabs defaultValue="get" className="w-full" onValueChange={setHttpMethod}>
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="get">GET</TabsTrigger>
                   <TabsTrigger value="post">POST</TabsTrigger>
@@ -99,15 +154,22 @@ const Orchestration = () => {
               <div className="flex gap-2 pt-4">
                 <Button 
                   onClick={handleExecute}
+                  disabled={isLoading}
                   className="flex-1 bg-gradient-to-r from-primary to-accent hover:opacity-90"
                 >
                   <Play className="h-4 w-4 mr-2" />
-                  Execute
+                  {isLoading ? "Loading..." : "Execute"}
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleReset} disabled={isLoading}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Reset
                 </Button>
+              </div>
+              
+              <div className="pt-4 border-t mt-4">
+                <p className="text-xs text-muted-foreground">
+                  Backend URL: <span className="font-mono">{API_CONFIG.BASE_URL}</span>
+                </p>
               </div>
             </div>
           </Card>
