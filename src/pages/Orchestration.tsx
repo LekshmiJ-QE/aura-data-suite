@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, RefreshCw } from "lucide-react";
+import { Play, RefreshCw, Code } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/api-client";
 import { API_CONFIG } from "@/config/api";
+import { ApiExplorer } from "@/components/ApiExplorer";
 
 const Orchestration = () => {
   const { toast } = useToast();
@@ -101,7 +102,11 @@ const Orchestration = () => {
       <div className="p-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Orchestration</h1>
-          <p className="text-muted-foreground">Integrate with test data management APIs</p>
+          <p className="text-muted-foreground">Integrate with test data management APIs and explore available endpoints</p>
+        </div>
+
+        <div className="mb-6">
+          <ApiExplorer />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -111,12 +116,26 @@ const Orchestration = () => {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="endpoint">API Endpoint</Label>
-                <Input
-                  id="endpoint"
-                  placeholder="https://api.example.com/v1/data"
-                  value={apiEndpoint}
-                  onChange={(e) => setApiEndpoint(e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="endpoint"
+                    placeholder="/users/ or /projects/"
+                    value={apiEndpoint}
+                    onChange={(e) => setApiEndpoint(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setApiEndpoint("/users/")}
+                    title="Try example endpoint"
+                  >
+                    <Code className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter endpoint path (e.g., /users/, /projects/, /tdm-tools/)
+                </p>
               </div>
 
               <div>
