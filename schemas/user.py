@@ -1,17 +1,18 @@
+
 from pydantic import BaseModel
 from typing import Optional
 
 class UserBase(BaseModel):
-    User_Name: str
-    User_Emp_ID: Optional[str] = None
-    User_Email_ID: Optional[str] = None
-    User_Role: Optional[str] = None
+    user_name: str
+    user_emp_id: Optional[str] = None
+    user_email_id: Optional[str] = None
+    user_role: Optional[str] = None
 
 class UserCreate(UserBase):
-    User_Password: str
+    user_password: str
 
 class User(UserBase):
-    User_ID: int
+    user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

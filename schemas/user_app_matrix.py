@@ -2,16 +2,16 @@ from pydantic import BaseModel
 from typing import Optional
 
 class UserAppMatrixBase(BaseModel):
-    User_ID: int
-    User_Name: Optional[str] = None
-    User_Role: Optional[str] = None
-    Project_ID: int
+    user_id: int
+    user_name: Optional[str] = None
+    user_role: Optional[str] = None
+    project_id: int
 
 class UserAppMatrixCreate(UserAppMatrixBase):
     pass
 
 class UserAppMatrix(UserAppMatrixBase):
-    Matrix_ID: int
+    matrix_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

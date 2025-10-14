@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 
 class ProjectConfigBase(BaseModel):
-    Config_Type: str
+    config_type: str
 
 class ProjectConfigCreate(ProjectConfigBase):
     pass
 
 class ProjectConfig(ProjectConfigBase):
-    Config_ID: int
+    config_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

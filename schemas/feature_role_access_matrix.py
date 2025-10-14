@@ -1,17 +1,17 @@
 from pydantic import BaseModel
 
 class FeatureRoleAccessMatrixBase(BaseModel):
-    Feature_ID: int
-    Feature_Name: str
-    Role: str
-    Action_Type: str
-    Action_Flag: bool
+    feature_id: int
+    feature_name: str
+    role: str
+    action_type: str
+    action_flag: bool
 
 class FeatureRoleAccessMatrixCreate(FeatureRoleAccessMatrixBase):
     pass
 
 class FeatureRoleAccessMatrix(FeatureRoleAccessMatrixBase):
-    Matrix_ID: int
+    matrix_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

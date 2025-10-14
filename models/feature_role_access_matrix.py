@@ -2,10 +2,10 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from app.database import Base
 
 class FeatureRoleAccessMatrix(Base):
-    __tablename__ = "Feature_Role_Access_Matrix"
-    Matrix_ID = Column(Integer, primary_key=True, index=True)
-    Feature_ID = Column(Integer, ForeignKey("Feature_Names.Feature_ID"))
-    Feature_Name = Column(String(100))
-    Role = Column(String(50))
-    Action_Type = Column(String(50))
-    Action_Flag = Column(Boolean)
+    __tablename__ = "feature_role_access_matrix"
+    matrix_id = Column(Integer, primary_key=True, index=True)
+    feature_id = Column(Integer, ForeignKey("feature_names.feature_id"))
+    feature_name = Column(String(100))
+    role = Column(String(50))
+    action_type = Column(String(50))
+    action_flag = Column(Boolean)

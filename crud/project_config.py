@@ -10,13 +10,13 @@ def create_project_config(db: Session, config: ProjectConfigCreate):
     return db_config
 
 def get_project_config(db: Session, config_id: int):
-    return db.query(ProjectConfig).filter(ProjectConfig.Config_ID == config_id).first()
+    return db.query(ProjectConfig).filter(ProjectConfig.config_id == config_id).first()
 
 def get_project_configs(db: Session, skip: int = 0, limit: int = 100):
     return db.query(ProjectConfig).offset(skip).limit(limit).all()
 
 def update_project_config(db: Session, config_id: int, config: ProjectConfigCreate):
-    db_config = db.query(ProjectConfig).filter(ProjectConfig.Config_ID == config_id).first()
+    db_config = db.query(ProjectConfig).filter(ProjectConfig.config_id == config_id).first()
     if db_config:
         for key, value in config.dict().items():
             setattr(db_config, key, value)
@@ -25,7 +25,7 @@ def update_project_config(db: Session, config_id: int, config: ProjectConfigCrea
     return db_config
 
 def delete_project_config(db: Session, config_id: int):
-    db_config = db.query(ProjectConfig).filter(ProjectConfig.Config_ID == config_id).first()
+    db_config = db.query(ProjectConfig).filter(ProjectConfig.config_id == config_id).first()
     if db_config:
         db.delete(db_config)
         db.commit()

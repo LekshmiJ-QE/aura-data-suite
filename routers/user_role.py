@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.schemas.user_role import UserRole, UserRoleCreate
+from app import schemas
+from app import crud
 from app.crud.user_role import (
     create_user_role, get_user_role, get_user_roles,
     update_user_role, delete_user_role

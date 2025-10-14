@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.schemas.user import User, UserCreate
+from app import crud
+from app import routers
+from app import schemas
 from app.crud.user import (
     create_user, get_user, get_users,
     update_user, delete_user
@@ -15,11 +18,10 @@ def get_db():
         yield db
     finally:
         db.close()
-
+        
 @router.post("/", response_model=User)
 def create(user: UserCreate, db: Session = Depends(get_db)):
     return create_user(db, user)
-
 @router.get("/{user_id}", response_model=User)
 def read(user_id: int, db: Session = Depends(get_db)):
     db_user = get_user(db, user_id)
@@ -27,9 +29,12 @@ def read(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-@router.get("/", response_model=list[User])
-def read_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_users(db, skip, limit)
+
+@router.get("/", response_model=list[schemas.user.User])
+def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    users = crud.user.get_users(db=db, skip=skip, limit=limit)
+    return [schemas.user.User.from_orm(user) for user in users]
+
 
 @router.put("/{user_id}", response_model=User)
 def update(user_id: int, user: UserCreate, db: Session = Depends(get_db)):

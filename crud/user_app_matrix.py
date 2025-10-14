@@ -10,13 +10,13 @@ def create_user_app_matrix(db: Session, matrix: UserAppMatrixCreate):
     return db_matrix
 
 def get_user_app_matrix(db: Session, matrix_id: int):
-    return db.query(UserAppMatrix).filter(UserAppMatrix.Matrix_ID == matrix_id).first()
+    return db.query(UserAppMatrix).filter(UserAppMatrix.matrix_id == matrix_id).first()
 
 def get_user_app_matrices(db: Session, skip: int = 0, limit: int = 100):
     return db.query(UserAppMatrix).offset(skip).limit(limit).all()
 
 def update_user_app_matrix(db: Session, matrix_id: int, matrix: UserAppMatrixCreate):
-    db_matrix = db.query(UserAppMatrix).filter(UserAppMatrix.Matrix_ID == matrix_id).first()
+    db_matrix = db.query(UserAppMatrix).filter(UserAppMatrix.matrix_id == matrix_id).first()
     if db_matrix:
         for key, value in matrix.dict().items():
             setattr(db_matrix, key, value)
@@ -25,7 +25,7 @@ def update_user_app_matrix(db: Session, matrix_id: int, matrix: UserAppMatrixCre
     return db_matrix
 
 def delete_user_app_matrix(db: Session, matrix_id: int):
-    db_matrix = db.query(UserAppMatrix).filter(UserAppMatrix.Matrix_ID == matrix_id).first()
+    db_matrix = db.query(UserAppMatrix).filter(UserAppMatrix.matrix_id == matrix_id).first()
     if db_matrix:
         db.delete(db_matrix)
         db.commit()

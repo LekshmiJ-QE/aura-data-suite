@@ -2,18 +2,18 @@ from pydantic import BaseModel
 from typing import Optional
 
 class ProjectBase(BaseModel):
-    Project_Name: str
-    Created_By_Name: Optional[str] = None
-    Created_By_Role: Optional[str] = None
-    Created_By_User_ID: Optional[int] = None
-    Module_Name: Optional[str] = None
-    Scenario_Name: Optional[str] = None
+    project_name: str
+    created_by_name: Optional[str] = None
+    created_by_role: Optional[str] = None
+    created_by_user_id: Optional[int] = None
+    module_name: Optional[str] = None
+    scenario_name: Optional[str] = None
 
 class ProjectCreate(ProjectBase):
     pass
 
 class Project(ProjectBase):
-    Project_ID: int
+    project_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

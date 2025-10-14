@@ -2,8 +2,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:India2025$@localhost/Data360"
+
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Libii%40123%40qwe@localhost/tdm_portal"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+def get_db():
+    from sqlalchemy.orm import Session
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

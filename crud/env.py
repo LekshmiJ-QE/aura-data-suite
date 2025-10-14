@@ -10,13 +10,13 @@ def create_environment(db: Session, env: EnvironmentCreate):
     return db_env
 
 def get_environment(db: Session, env_id: int):
-    return db.query(Environment).filter(Environment.Env_ID == env_id).first()
+    return db.query(Environment).filter(Environment.env_id == env_id).first()
 
 def get_environments(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Environment).offset(skip).limit(limit).all()
 
 def update_environment(db: Session, env_id: int, env: EnvironmentCreate):
-    db_env = db.query(Environment).filter(Environment.Env_ID == env_id).first()
+    db_env = db.query(Environment).filter(Environment.env_id == env_id).first()
     if db_env:
         for key, value in env.dict().items():
             setattr(db_env, key, value)
@@ -25,7 +25,7 @@ def update_environment(db: Session, env_id: int, env: EnvironmentCreate):
     return db_env
 
 def delete_environment(db: Session, env_id: int):
-    db_env = db.query(Environment).filter(Environment.Env_ID == env_id).first()
+    db_env = db.query(Environment).filter(Environment.env_id == env_id).first()
     if db_env:
         db.delete(db_env)
         db.commit()

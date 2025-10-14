@@ -10,13 +10,13 @@ def create_db_defination(db: Session, db_def: DBDefinationTableCreate):
     return db_db_def
 
 def get_db_defination(db: Session, db_id: int):
-    return db.query(DBDefinationTable).filter(DBDefinationTable.DB_ID == db_id).first()
+    return db.query(DBDefinationTable).filter(DBDefinationTable.db_id == db_id).first()
 
 def get_db_definations(db: Session, skip: int = 0, limit: int = 100):
     return db.query(DBDefinationTable).offset(skip).limit(limit).all()
 
 def update_db_defination(db: Session, db_id: int, db_def: DBDefinationTableCreate):
-    db_db_def = db.query(DBDefinationTable).filter(DBDefinationTable.DB_ID == db_id).first()
+    db_db_def = db.query(DBDefinationTable).filter(DBDefinationTable.db_id == db_id).first()
     if db_db_def:
         for key, value in db_def.dict().items():
             setattr(db_db_def, key, value)
@@ -25,7 +25,7 @@ def update_db_defination(db: Session, db_id: int, db_def: DBDefinationTableCreat
     return db_db_def
 
 def delete_db_defination(db: Session, db_id: int):
-    db_db_def = db.query(DBDefinationTable).filter(DBDefinationTable.DB_ID == db_id).first()
+    db_db_def = db.query(DBDefinationTable).filter(DBDefinationTable.db_id == db_id).first()
     if db_db_def:
         db.delete(db_db_def)
         db.commit()

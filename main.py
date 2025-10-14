@@ -1,5 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import tdm_tool
+from app.routers import orchestration_access_matrix
+from app.routers import tdm_tool_services_field
+from app.routers import genrocket_services_details
+from app.routers import genrocket_services_execution_details
+from app.routers import delete_logs
+
+ 
+
 
 from app.routers import (
     user, project, env, user_role, project_config,
@@ -31,6 +40,13 @@ app.include_router(feature_names.router)
 app.include_router(feature_role_access_matrix.router)
 app.include_router(db_defination_table.router)
 app.include_router(user_app_matrix.router)
+app.include_router(tdm_tool.router)
+app.include_router(orchestration_access_matrix.router)
+app.include_router(tdm_tool_services_field.router)
+app.include_router(genrocket_services_details.router)
+app.include_router(genrocket_services_execution_details.router)
+app.include_router(delete_logs.router)
+
 
 @app.get("/")
 def read_root():

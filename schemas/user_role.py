@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 
 class UserRoleBase(BaseModel):
-    Role_Name: str
+    role_name: str
 
 class UserRoleCreate(UserRoleBase):
     pass
 
 class UserRole(UserRoleBase):
-    Role_ID: int
-
+    role_id: int
+    role_name: str
     class Config:
-        orm_mode = True
+        from_attributes = True

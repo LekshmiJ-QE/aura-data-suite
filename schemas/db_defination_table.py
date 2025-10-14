@@ -2,20 +2,20 @@ from pydantic import BaseModel
 from typing import Optional
 
 class DBDefinationTableBase(BaseModel):
-    DB_Name: str
-    DB_P1_Name: Optional[str] = None
-    DB_P2_Name: Optional[str] = None
-    DB_P3_Name: Optional[str] = None
-    DB_P4_Name: Optional[str] = None
-    DB_P5_Name: Optional[str] = None
-    DB_P6_Name: Optional[str] = None
-    DB_P7_Name: Optional[str] = None
+    db_name: str
+    db_p1_name: Optional[str] = None
+    db_p2_name: Optional[str] = None
+    db_p3_name: Optional[str] = None
+    db_p4_name: Optional[str] = None
+    db_p5_name: Optional[str] = None
+    db_p6_name: Optional[str] = None
+    db_p7_name: Optional[str] = None
 
 class DBDefinationTableCreate(DBDefinationTableBase):
     pass
 
 class DBDefinationTable(DBDefinationTableBase):
-    DB_ID: int
+    db_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

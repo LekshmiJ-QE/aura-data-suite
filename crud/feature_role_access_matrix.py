@@ -10,13 +10,13 @@ def create_feature_role_access_matrix(db: Session, matrix: FeatureRoleAccessMatr
     return db_matrix
 
 def get_feature_role_access_matrix(db: Session, matrix_id: int):
-    return db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.Matrix_ID == matrix_id).first()
+    return db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.matrix_id == matrix_id).first()
 
 def get_feature_role_access_matrices(db: Session, skip: int = 0, limit: int = 100):
     return db.query(FeatureRoleAccessMatrix).offset(skip).limit(limit).all()
 
 def update_feature_role_access_matrix(db: Session, matrix_id: int, matrix: FeatureRoleAccessMatrixCreate):
-    db_matrix = db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.Matrix_ID == matrix_id).first()
+    db_matrix = db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.matrix_id == matrix_id).first()
     if db_matrix:
         for key, value in matrix.dict().items():
             setattr(db_matrix, key, value)
@@ -25,7 +25,7 @@ def update_feature_role_access_matrix(db: Session, matrix_id: int, matrix: Featu
     return db_matrix
 
 def delete_feature_role_access_matrix(db: Session, matrix_id: int):
-    db_matrix = db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.Matrix_ID == matrix_id).first()
+    db_matrix = db.query(FeatureRoleAccessMatrix).filter(FeatureRoleAccessMatrix.matrix_id == matrix_id).first()
     if db_matrix:
         db.delete(db_matrix)
         db.commit()

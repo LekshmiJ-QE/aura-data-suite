@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 
 class FeatureNamesBase(BaseModel):
-    Feature_Name: str
+    feature_name: str
 
 class FeatureNamesCreate(FeatureNamesBase):
     pass
 
 class FeatureNames(FeatureNamesBase):
-    Feature_ID: int
+    feature_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

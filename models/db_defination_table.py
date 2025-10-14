@@ -2,13 +2,13 @@ from sqlalchemy import Column, Integer, String
 from app.database import Base
 
 class DBDefinationTable(Base):
-    __tablename__ = "DB_Defination_Table"
-    DB_ID = Column(Integer, primary_key=True, index=True)
-    DB_Name = Column(String(50), nullable=False)
-    DB_P1_Name = Column(String(50))
-    DB_P2_Name = Column(String(50))
-    DB_P3_Name = Column(String(50))
-    DB_P4_Name = Column(String(50))
-    DB_P5_Name = Column(String(50))
-    DB_P6_Name = Column(String(50))
-    DB_P7_Name = Column(String(50))
+    __tablename__ = "db_defination_table"
+    db_id = Column(Integer, primary_key=True, index=True)
+    db_name = Column(String(50), nullable=False)
+    db_p1_name = Column(String(50))
+    db_p2_name = Column(String(50))
+    db_p3_name = Column(String(50))
+    db_p4_name = Column(String(50))
+    db_p5_name = Column(String(50))
+    db_p6_name = Column(String(50))
+    db_p7_name = Column(String(50))

@@ -2,9 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from app.database import Base
 
 class UserAppMatrix(Base):
-    __tablename__ = "User_App_Matrix"
-    Matrix_ID = Column(Integer, primary_key=True, index=True)
-    User_ID = Column(Integer, ForeignKey("User_Table.User_ID"))
-    User_Name = Column(String(100))
-    User_Role = Column(String(50))
-    Project_ID = Column(Integer, ForeignKey("Project_Table.Project_ID"))
+    __tablename__ = "user_app_matrix"
+    matrix_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user_table.user_id"))
+    user_name = Column(String(100))
+    user_role = Column(String(50))
+    project_id = Column(Integer, ForeignKey("project_table.project_id"))
